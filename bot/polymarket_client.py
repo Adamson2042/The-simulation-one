@@ -91,14 +91,6 @@ class PolymarketClient:
 
             logger.warning("Could not determine UP/DOWN tokens")
 
-            """ tokens = market_data.get("tokens", [])
-            if len(tokens) >= 2:
-                return {
-                    "up": tokens[0].get("token_id"),
-                    "down": tokens[1].get("token_id"),
-                    "market_data": market_data,
-                }
-            return None"""
         except Exception as e: 
             logger.error(f"Error fetching market tokens: {e}")
             return None

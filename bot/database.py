@@ -97,13 +97,16 @@ class Database:
                 self.client.table('events')
                 .select('traded')
                 .eq('event_id', event_id)
-                .maybe_single()
+                .limit(1)
                 .execute()
             )
 
-            if response.data:
-                return response.data.get('traded', False)
+            if response.data and len(response.data) > 0:
+                return response.data[0].get("traded", False)
+        
+            logger.info(f"Event {event_id} not found in DB")
             return False
+        
         except Exception as e:
             logger.error(f"Error checking if event traded: {e}")
             return False
@@ -114,12 +117,12 @@ class Database:
                 self.client.table('events')
                 .select('id')
                 .eq('event_id', event_data['event_id'])
-                .maybe_single()
+                .limit(1)
                 .execute()
             )
 
-            if response.data:
-                return response.data['id']
+            if response.data and len(response.data) > 0:
+                return response.data[0]["id"]
 
             event_record = {
                 'event_id': event_data['event_id'],
@@ -130,7 +133,10 @@ class Database:
             }
 
             response = self.client.table('events').insert(event_record).execute()
-            return response.data[0]['id']
+            if response.data:
+                return response.data[0]["id"]
+
+            return None
         except Exception as e:
             logger.error(f"Error saving event: {e}")
             return None
